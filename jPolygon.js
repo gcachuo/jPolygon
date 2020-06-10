@@ -178,8 +178,13 @@ class jPolygon {
 }
 
 $.fn.extend({
-    jPolygon: function ({$coordinates, onComplete, onClose, onIntersect, onIncomplete}) {
+    jPolygon: function ({width, height, $coordinates, onComplete, onClose, onIntersect, onIncomplete}) {
         const $this = this;
+
+        $this.css({cursor: 'crosshair'});
+        $this.attr('width', width);
+        $this.attr('height', height);
+
         const jpolygon = new jPolygon($this.get(0), {
             coordinates_field: $coordinates.get(0),
             imgsrc: $this.data('imgsrc'),
@@ -188,6 +193,7 @@ $.fn.extend({
             onIntersect,
             onIncomplete,
         });
+
         $this
             .on('mousedown', (event) => {
                 jpolygon.point_it(event);
@@ -195,6 +201,7 @@ $.fn.extend({
             .on('contextmenu', (event) => {
                 return false;
             });
+
         return jpolygon;
     }
 });
