@@ -11,9 +11,14 @@ class jPolygon {
     complete = false;
     canvas;
     ctx;
+    settings;
 
     constructor(_canvas, _settings) {
         this.canvas = _canvas;
+
+        const {coordinates_field, imgsrc, onComplete, onClose, onIntersect, onIncomplete} = _settings;
+        this.settings = {coordinates_field, imgsrc, onComplete, onClose, onIntersect, onIncomplete};
+
         this.clear_canvas();
     }
 
@@ -49,7 +54,7 @@ class jPolygon {
         this.ctx = undefined;
         this.perimeter = [];
         this.complete = false;
-        document.getElementById('coordinates').value = '';
+        this.settings.coordinates_field.value = '';
         this.start();
     }
 
@@ -80,9 +85,9 @@ class jPolygon {
 
         // print coordinates
         if (this.perimeter.length === 0) {
-            document.getElementById('coordinates').value = '';
+            this.settings.coordinates_field.value = '';
         } else {
-            document.getElementById('coordinates').value = JSON.stringify(this.perimeter);
+            this.settings.coordinates_field.value = JSON.stringify(this.perimeter);
         }
     }
 
@@ -120,24 +125,24 @@ class jPolygon {
 
     point_it(event) {
         if (this.complete) {
-            alert('Polygon already created');
+            this.settings.onComplete();
             return false;
         }
         let rect, x, y;
 
         if (event.ctrlKey || event.which === 3 || event.button === 2) {
             if (this.perimeter.length === 2) {
-                alert('You need at least three points for a polygon');
+                this.settings.onIncomplete();
                 return false;
             }
             x = this.perimeter[0]['x'];
             y = this.perimeter[0]['y'];
             if (this.check_intersect(x, y)) {
-                alert('The line you are drowing intersect another line');
+                this.settings.onIntersect();
                 return false;
             }
             this.draw(true);
-            alert('Polygon closed');
+            this.settings.onClose();
             event.preventDefault();
             return false;
         } else {
@@ -149,7 +154,7 @@ class jPolygon {
                 return false;
             }
             if (this.check_intersect(x, y)) {
-                alert('The line you are drowing intersect another line');
+                this.settings.onIntersect();
                 return false;
             }
             this.perimeter.push({'x': x, 'y': y});
@@ -160,7 +165,7 @@ class jPolygon {
 
     start(with_draw) {
         const img = new Image();
-        img.src = this.canvas.getAttribute('data-imgsrc');
+        img.src = this.settings.imgsrc;
 
         img.onload = () => {
             this.ctx = this.canvas.getContext("2d");
@@ -173,9 +178,16 @@ class jPolygon {
 }
 
 $.fn.extend({
-    jPolygon: function (settings) {
+    jPolygon: function ({$coordinates, onComplete, onClose, onIntersect, onIncomplete}) {
         const $this = this;
-        const jpolygon = new jPolygon($this.get(0), settings);
+        const jpolygon = new jPolygon($this.get(0), {
+            coordinates_field: $coordinates.get(0),
+            imgsrc: $this.data('imgsrc'),
+            onComplete,
+            onClose,
+            onIntersect,
+            onIncomplete,
+        });
         $this
             .on('mousedown', (event) => {
                 jpolygon.point_it(event);
@@ -183,5 +195,6 @@ $.fn.extend({
             .on('contextmenu', (event) => {
                 return false;
             });
+        return jpolygon;
     }
 });
