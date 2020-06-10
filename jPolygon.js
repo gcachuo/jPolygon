@@ -16,8 +16,8 @@ class jPolygon {
     constructor(_canvas, _settings) {
         this.canvas = _canvas;
 
-        const {coordinates_field, imgsrc, onComplete, onClose, onIntersect, onIncomplete} = _settings;
-        this.settings = {coordinates_field, imgsrc, onComplete, onClose, onIntersect, onIncomplete};
+        const {coordinates, coordinates_field, imgsrc, onComplete, onClose, onIntersect, onIncomplete} = _settings;
+        this.settings = {coordinates, coordinates_field, imgsrc, onComplete, onClose, onIntersect, onIncomplete};
 
         this.clear_canvas();
     }
@@ -87,6 +87,7 @@ class jPolygon {
         if (this.perimeter.length === 0) {
             this.settings.coordinates_field.value = '';
         } else {
+            this.settings.coordinates = this.perimeter;
             this.settings.coordinates_field.value = JSON.stringify(this.perimeter);
         }
     }
@@ -178,7 +179,7 @@ class jPolygon {
 }
 
 $.fn.extend({
-    jPolygon: function ({width, height, $coordinates, onComplete, onClose, onIntersect, onIncomplete}) {
+    jPolygon: function ({width, height, coordinates, $coordinates, onComplete, onClose, onIntersect, onIncomplete}) {
         const $this = this;
 
         $this.css({cursor: 'crosshair'});
@@ -186,6 +187,7 @@ $.fn.extend({
         $this.attr('height', height);
 
         const jpolygon = new jPolygon($this.get(0), {
+            coordinates,
             coordinates_field: $coordinates.get(0),
             imgsrc: $this.data('imgsrc'),
             onComplete,
