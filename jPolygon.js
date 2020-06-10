@@ -16,8 +16,8 @@ class jPolygon {
     constructor(_canvas, _settings) {
         this.canvas = _canvas;
 
-        const {coordinates, coordinatesField, imgsrc, onComplete, onClose, onIntersect, onIncomplete} = _settings;
-        this.settings = {coordinates, coordinatesField, imgsrc, onComplete, onClose, onIntersect, onIncomplete};
+        const {imgSrc, coordinates, coordinatesField, onComplete, onClose, onIntersect, onIncomplete} = _settings;
+        this.settings = {imgSrc, coordinates, coordinatesField, onComplete, onClose, onIntersect, onIncomplete};
 
         this.clear_canvas();
     }
@@ -166,7 +166,7 @@ class jPolygon {
 
     start(with_draw) {
         const img = new Image();
-        img.src = this.settings.imgsrc;
+        img.src = this.settings.imgSrc;
 
         img.onload = () => {
             var hRatio = this.canvas.width / img.width;
@@ -185,7 +185,7 @@ class jPolygon {
 }
 
 $.fn.extend({
-    jPolygon: function ({width, height, coordinates, $coordinates, onComplete, onClose, onIntersect, onIncomplete}) {
+    jPolygon: function ({imgSrc, width, height, coordinates, $coordinates, onComplete, onClose, onIntersect, onIncomplete}) {
         const $this = this;
 
         $this.css({cursor: 'crosshair'});
@@ -195,7 +195,7 @@ $.fn.extend({
         const jpolygon = new jPolygon($this.get(0), {
             coordinates,
             coordinatesField: $coordinates.get(0),
-            imgsrc: $this.data('imgsrc'),
+            imgSrc,
             onComplete,
             onClose,
             onIntersect,
