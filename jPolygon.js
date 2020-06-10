@@ -169,6 +169,12 @@ class jPolygon {
         img.src = this.settings.imgsrc;
 
         img.onload = () => {
+            var hRatio = this.canvas.width / img.width;
+            var vRatio = this.canvas.height / img.height;
+            var ratio = Math.min(hRatio, vRatio);
+
+            this.canvas.width = img.width * ratio;
+            this.canvas.height = img.height * ratio;
             this.ctx = this.canvas.getContext("2d");
             this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
             if (with_draw === true) {
